@@ -17,6 +17,29 @@ const userSchema = new Schema(
                     return /^([a-zA-z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,4})$/.test(email);
                 }
             }
+        },
+
+        thoughts: [{
+            type: Schema.Types.ObjectId,
+            ref: 'Thought',
+        }],
+
+        friends: [{
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+        }],
+    },
+    {
+        toJSON: {
+            virtuals: true,
         }
     }
-)
+);
+
+userSchema.virtual('friendCount').get(function(){
+    return this.friends.length;
+})
+
+const User = model('User', userSchema)
+
+module.exports = User
