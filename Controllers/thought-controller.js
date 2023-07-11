@@ -1,27 +1,27 @@
-const { thought, user, reaction } = require('../models');
+const { Thought, user, reaction } = require('../models');
 
 const ThoughtController = {
 
     getThoughts(req, res) {
-        thought.find({})
+        Thought.find({})
             .then(userThought => res.json(userThought))
             .catch(err => res.status(500).json(err))
     },
 
     getSingleThought(req, res) {
-        thought.findById(req.params.userId)
+        Thought.findById(req.params.thoughtId)
             .then(userThought => res.json(userThought))
             .catch(err => res.status(500).json(err))
     },
 
     newThought(req, res) {
-        thought.create(req.body)
+        Thought.create(req.body)
             .then(userThought => res.json(userThought))
             .catch(err => res.status(500).json(err))
     },
 
     updateThought(req, res) {
-        thought.findOneAndUpdate(req.params.id, req.body, { new: true })
+        Thought.findOneAndUpdate(req.params.id, req.body, { new: true })
             .then(userThought => {
                 if (!userThought) {
                     return res.status(404).json({ message: 'No Thought Found ' })
@@ -32,7 +32,7 @@ const ThoughtController = {
     },
 
     deleteThought(req, res) {
-        thought.findOneAndDelete(req.params.id)
+        Thought.findOneAndDelete(req.params.id)
             .then(userThought => {
                 if (!userThought) {
                     return res.status(404).json({ message: 'No Thought Found' });
@@ -42,36 +42,48 @@ const ThoughtController = {
             .catch(err => res.status(500).json(err));
     },
 
-    newReaction(req, res) {
-        thought.findOneAndUpdate(
+    async newReaction(req, res) {
+        try {
+            const thought = await Thought.findOneAndUpdate(
+                {_id:req.params.thoughtId},
+                {$addToSet: {reactions: req.body}},
+                {runValidators: true, new: true}
+            );
+            thought ? res.json(thought) : res.status(404).json({message: notFound});
+        } catch (e) {
+            res.status(500).json(e);
+        }
+
+        // Thought.findOneAndUpdate(
+        //     { _id: req.params.thoughtId },
+        //     { $addtoSet: { reaction: req.body } },
+        //     { runValidators: true, new: true }
+        // )
+        //     .then(reaction => {
+        //         if (!reaction) {
+        //             return res.status(404).json({ message: 'No Reaction Found ' })
+        //         }
+        //         res.json(reaction);
+        //     })
+        //     .catch(err => res.status(500).json(err))
+    },
+
+    removeReaction(req, res) {
+        Thought.findOneAndUpdate(
             { _id: req.params.thoughtId },
-            { $addtoSet: { reactions: req.body } },
+            { $pull: { reactions: { reactionId: req.params.reactionId } } },
             { new: true }
         )
             .then(reaction => {
                 if (!reaction) {
-                    return res.status(404).json({ message: 'No Reaction Found ' })
+                    return res.status(404).json({ message: 'No Reaction Found' });
                 }
-            })
-            .catch(err => res.status(500).json(err))
-    },
+                return res.status(200).json({ message: 'Reaction Removed', reaction })
 
-    removeReaction(req, res) {
-        thought.findOneAndUpdate(
-            { _id: req.params.thoughtId },
-            { $pull: { reactions: {reactionId: req.params.reactionId} } },
-            { new: true }
-        )
-        .then(reaction => {
-            if(!reaction) {
-                return res.status(404).json({ message: 'No Reaction Found'});
-            }
-            return res.status(200).json({ message: 'Reaction Removed', reaction})
-        
-        })
-        .catch(err => {
-            return res.status(500).json(err);
-        })
+            })
+            .catch(err => {
+                return res.status(500).json(err);
+            })
 
     }
 };
