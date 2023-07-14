@@ -12,7 +12,6 @@ Provide a short description explaining the what, why, and how of your project. U
 If your README is long, add a table of contents to make it easy for users to find what they need.
 
 - [Installation](#installation)
-- [Usage](#usage)
 - [EndPoints](#endpoints)
 - [Information](#information)
 
@@ -22,7 +21,6 @@ To install, the developer will follow the github repo and clone it down into the
 
 Once the developer has the project installed, they will install the necessary packages and then use 'npm start'. From there they will use Insomnia to test out the endpoints and can also use MongoDB Compass to see the databases as they test it out. 
 
-## Usage
 
 # EndPoints
 
@@ -52,7 +50,8 @@ With DELETE, the developer will be able to remove a reaction on a thought
 - /api/thought/:thoughtID/reactions/:reactionId
 
 
-![Put route example]
+![Put route example](./Assets/insomnia.put.PNG)
+![Put route example](./Assets/insomnia.Get.PNG)
 
 
 
