@@ -52,6 +52,9 @@ With DELETE, the developer will be able to remove a reaction on a thought
 - /api/thought/:thoughtID/reactions/:reactionId
 
 
+![Put route example]
+
+
 
 ## Information
 
